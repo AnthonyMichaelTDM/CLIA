@@ -1,0 +1,4 @@
+this is jsut a thing you can add to your command line programs, coded on a whim
+
+still need to write more tests and documentation,
+and add a way to extract arguments that aren't options
