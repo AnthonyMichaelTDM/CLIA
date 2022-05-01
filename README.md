@@ -41,7 +41,7 @@ Here is an example showcasing all the basic features of CLIO.
 ```rust
 use std::env;
 
-use clio::{option_args::{ClOption,ClOptionInfo},parameter_args::ClParameter,Parser};
+use clia::{option_args::{ClOption,ClOptionInfo},parameter_args::ClParameter,Parser};
 
 /// this is just an example of using this crate
 fn main() {
