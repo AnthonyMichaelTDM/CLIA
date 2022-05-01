@@ -10,16 +10,25 @@ use crate::option_args;
 /// valid flags are given by valid_options
 /// returns a vector containing all of the ClOptions in valid_options, with their associated data updated
 /// 
-/// # Notes: 
-/// - an options `short_flag` must be a `-` followed by any alphabetic ascii character
-/// - an options `long_flag` must be `--` followed by a word (or words separated by additional `-`'s)
-/// 
 /// # Errors
 /// - `args` contains a flag (string starting with `-`) not in `valid_options` 
+/// - the `args` passed would result in an error from `option_parser::get_list_after_flag()` or `option_parser::get_data_after_flag()`
 /// 
 /// # Examples
 /// ```
+/// use std::env; //allows access to the process's environment
 /// 
+/// use clia::{option_args,option_parser};
+/// 
+/// //collect cli arguments
+/// let args: Vec<String> = env::args().collect();
+/// 
+/// //define valid options
+/// let valid_options: Vec<option_args::ClOption> = Vec::new();
+/// //...
+/// 
+/// //call option_parser::parse_for_options() to get a vector that's a copy of valid_options but with it's data updated
+/// let parsed_options: Vec<option_args::ClOption> = option_parser::parse_for_options(&args, &valid_options).unwrap();
 /// ```
 /// 
 pub fn parse_for_options(args: &[String], valid_options: &[option_args::ClOption]) -> Result<Vec<option_args::ClOption>,Box<dyn Error>> {
@@ -112,15 +121,32 @@ pub fn parse_for_options(args: &[String], valid_options: &[option_args::ClOption
 }
 
 /// gets the list after flag from command line arguments (args), if there is one
-/// note: when using this, ensure that the returned list is as expected, as shown in examples, it will attempt to make a list out of whatever valid argument follows it
+/// 
+/// 
+/// # Note
+/// - you probably don't need to use this, try option_parser::parse_for_options() unless you know you need this
+/// - when using this, ensure that the returned list is as expected, as shown in examples, it will attempt to make a list out of whatever valid argument follows it
 /// 
 /// # Errors
 /// - flag is not in args
 /// - flag is last element in args
-/// - element following flag in args starts with a `-` (is anparameter flag)
+/// - element following flag in args starts with a `-` (is another flag)
 /// 
 /// # Examples
 /// ```
+/// use clia::option_parser;
+/// 
+/// let flag = "--your-flag";
+/// let args = vec![String::from("--your-flag"),String::from("your,list"),String::from("--not-your-flag")];
+/// 
+/// assert!( option_parser::get_list_after_flag(&args, flag).is_ok() );
+/// assert_eq!( option_parser::get_list_after_flag(&args, flag).unwrap(), vec!["your", "list"]);
+/// ```
+/// 
+/// some cases where it will fail
+/// ```
+/// use clia::option_parser;
+/// 
 /// let flag = "--your-flag";
 /// let missing_flag   = vec![String::from("--not-your-flag"),String::from("your,list"),String::from("NotYourList")];
 /// let missing_list   = vec![String::from("--your-flag"),String::from("--not-your-flag"),String::from("NotYourList")];
@@ -128,11 +154,11 @@ pub fn parse_for_options(args: &[String], valid_options: &[option_args::ClOption
 /// let comma_separated= vec![String::from("--your-flag"),String::from("your,list"),String::from("NotYourList")];
 /// let wrong_list     = vec![String::from("--your-flag"),String::from("NotYourList"),String::from("your,list")]; //NOTE: this won't fail, so you need to double check the results of this function when using it
 /// 
-/// assert_eq!(argument_parser::option_parser::get_list_after_flag(&missing_flag, flag).unwrap_err().to_string(),      "Could not find flag(--your-flag) in args([\"--not-your-flag\", \"your,list\", \"NotYourList\"])");
-/// assert_eq!(argument_parser::option_parser::get_list_after_flag(&missing_list, flag).unwrap_err().to_string(),      "No list found after flag(--your-flag) in args([\"--your-flag\", \"--not-your-flag\", \"NotYourList\"])");
-/// assert_eq!(argument_parser::option_parser::get_list_after_flag(&flag_at_end, flag).unwrap_err().to_string(),       "No arguments after flag(--your-flag) in args([\"NotYourList\", \"your,list\", \"--your-flag\"])");
-/// assert_eq!(argument_parser::option_parser::get_list_after_flag(&comma_separated, flag).unwrap(),                   vec!["your", "list"]);
-/// assert_eq!(argument_parser::option_parser::get_list_after_flag(&wrong_list, flag).unwrap(),                        vec!["NotYourList"]);
+/// assert_eq!(option_parser::get_list_after_flag(&missing_flag, flag).unwrap_err().to_string(),      "Could not find flag(--your-flag) in args([\"--not-your-flag\", \"your,list\", \"NotYourList\"])");
+/// assert_eq!(option_parser::get_list_after_flag(&missing_list, flag).unwrap_err().to_string(),      "No list found after flag(--your-flag) in args([\"--your-flag\", \"--not-your-flag\", \"NotYourList\"])");
+/// assert_eq!(option_parser::get_list_after_flag(&flag_at_end, flag).unwrap_err().to_string(),       "No arguments after flag(--your-flag) in args([\"NotYourList\", \"your,list\", \"--your-flag\"])");
+/// assert_eq!(option_parser::get_list_after_flag(&comma_separated, flag).unwrap(),                   vec!["your", "list"]);
+/// assert_eq!(option_parser::get_list_after_flag(&wrong_list, flag).unwrap(),                        vec!["NotYourList"]);
 /// ```
 pub fn get_list_after_flag<'a>(args: &[String], flag: &'a str) -> Result<Vec<String>,Box<dyn Error>> {
     //DATA
@@ -145,13 +171,13 @@ pub fn get_list_after_flag<'a>(args: &[String], flag: &'a str) -> Result<Vec<Str
         Err(e) => return Err(e),
     }
 
-    //if there is no list after the flag (no more arguments or next argument is anparameter flag)
+    //if there is no list after the flag (no more arguments or next argument is another flag)
     //flag is at end of list
     match args.get(flag_position+1) {
         Some(arg) => arg_after_flag = arg.clone(),
         None => return Err(format!("No arguments after flag({}) in args({:?})", flag, args).into()),
     }
-    //arg following the flag is anparameter flag
+    //arg following the flag is another flag
     if arg_after_flag.starts_with("-") {
         return Err(format!("No list found after flag({}) in args({:?})",flag,args).into());
     }
@@ -165,14 +191,40 @@ pub fn get_list_after_flag<'a>(args: &[String], flag: &'a str) -> Result<Vec<Str
 
 /// gets the data after flag from command line arguments (args), if there is one
 /// 
+/// # Note
+/// - you probably don't need to use this, try option_parser::parse_for_options() unless you know you need this
+/// 
 /// # Errors
 /// - flag is not in args
 /// - flag is last element in args
-/// - element following flag in args starts with a `-` (is anparameter flag)
+/// - element following flag in args starts with a `-` (is another flag)
 /// 
 /// # Examples
 /// ```
+/// use clia::option_parser;
 /// 
+/// let flag = "--your-flag";
+/// let args = vec![String::from("--your-flag"),String::from("your-data"),String::from("--not-your-flag")];
+/// 
+/// assert!( option_parser::get_data_after_flag(&args, flag).is_ok() );
+/// assert_eq!( option_parser::get_data_after_flag(&args, flag).unwrap(), "your-data" );
+/// 
+/// ```
+/// 
+/// some cases where it will fail
+/// ```
+/// use clia::option_parser;
+/// 
+/// let flag = "--your-flag";
+/// let missing_flag   = vec![String::from("--not-your-flag"),String::from("your-data"),String::from("Not,Your,Data")];
+/// let missing_data   = vec![String::from("--your-flag"),String::from("--not-your-flag"),String::from("Not,Your,Data")];
+/// let flag_at_end    = vec![String::from("Not,Your,Data"),String::from("your-data"),String::from("--your-flag")];
+/// let wrong_data     = vec![String::from("--your-flag"),String::from("Not,Your,Data"),String::from("your-data")]; //NOTE: this won't fail, so you need to double check the results of this function when using it
+/// 
+/// assert_eq!(option_parser::get_data_after_flag(&missing_flag, flag).unwrap_err().to_string(),      "Could not find flag(--your-flag) in args([\"--not-your-flag\", \"your-data\", \"Not,Your,Data\"])");
+/// assert_eq!(option_parser::get_data_after_flag(&missing_data, flag).unwrap_err().to_string(),      "No list found after flag(--your-flag) in args([\"--your-flag\", \"--not-your-flag\", \"Not,Your,Data\"])");
+/// assert_eq!(option_parser::get_data_after_flag(&flag_at_end, flag).unwrap_err().to_string(),       "No arguments after flag(--your-flag) in args([\"Not,Your,Data\", \"your-data\", \"--your-flag\"])");
+/// assert_eq!(option_parser::get_data_after_flag(&wrong_data, flag).unwrap(),                        "Not,Your,Data");
 /// ```
 pub fn get_data_after_flag<'a>(args: &[String], flag: &'a str) -> Result<String,Box<dyn Error>> {
     //DATA
@@ -184,13 +236,13 @@ pub fn get_data_after_flag<'a>(args: &[String], flag: &'a str) -> Result<String,
         Err(e) => return Err(e),
     }
 
-    //if there is no list after the flag (no more arguments or next argument is anparameter flag)
+    //if there is no data after the flag (no more arguments or next argument is another flag)
     //flag is at end of list
     match args.get(flag_position+1) {
         Some(arg) => arg_after_flag = arg.clone(),
         None => return Err(format!("No arguments after flag({}) in args({:?})", flag, args).into()),
     }
-    //arg following the flag is anparameter flag
+    //arg following the flag is another flag
     if arg_after_flag.starts_with("-") {
         return Err(format!("No list found after flag({}) in args({:?})",flag,args).into());
     }
