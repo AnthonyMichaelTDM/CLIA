@@ -2,6 +2,13 @@
 name = "clia"
 version = "0.1.0"
 edition = "2021"
+description = "Rust command-line argument parser with no extra dependencies."
+readme = "README.md"
+repository = "https://github.com/AnthonyMichaelTDM/CLIA"
+license-file = "LICENSE"
+keywords = ["cli", "command-line argument", "parser"]
+categories = ["command-line-interface"]
+exclude = ["/src/main.rs", ".github/*"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
