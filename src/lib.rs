@@ -5,9 +5,9 @@
 //! As far as this crate is concerned, there are 4 types of arguments, in 2 main groups
 //! 
 //! Options:
-//! - flags (ei. -r)
-//! - flags w/ lists (ei -f <comma separated list> )
-//! - flags w/ data (ei --format=NUMERIC)
+//! - flags (ei. `-r`)
+//! - flags w/ lists (ei `-f [comma separated list]` )
+//! - flags w/ data (ei `--format <NUMERIC>`)
 //! 
 //! and Parameters:
 //! - (ei a file path, a string, etc.)

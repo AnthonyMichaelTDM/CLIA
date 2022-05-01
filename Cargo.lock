@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "cli_argument_parser"
+name = "clio"
 version = "0.1.0"
