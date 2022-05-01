@@ -27,14 +27,14 @@ This crate makes the following assumptions about your command line program:
 - any and all "Parameters" are required, and must be included in the arguments for your program to work properly (optional arguments should be tied to flags anyway)
 
 ### installing
+[see on crates.io](https://crates.io/crates/clia)
+
 add `clia=0.1.2` to the [dependencies] of your projects cargo.toml like so:
 
 ```rust
 [dependencies]
 clia="0.1.2"
 ```
-
-NOTE. this doesn't actually work rn, i don't have this added to crates.io yet
 
 ## Example
 Here is an example showcasing all the basic features of CLIO.
