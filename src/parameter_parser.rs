@@ -20,7 +20,19 @@ use crate::parameter_args;
 /// 
 /// # Examples
 /// ```
+/// use std::env; //allows access to the process's environment
 /// 
+/// use clia::{parameter_args,parameter_parser};
+/// 
+/// //collect cli arguments
+/// let args: Vec<String> = env::args().collect();
+/// 
+/// //define expected parameters
+/// let expected_parameters: Vec<parameter_args::ClParameter> = Vec::new();
+/// //..
+/// 
+/// //call parameter_parser::parse_for_parameters() to get a vector that's a copy of expected_parameters but with it's data updated
+/// let parsed_parameters: Vec<parameter_args::ClParameter> = parameter_parser::parse_for_parameters(&args, &expected_parameters).unwrap();
 /// ```
 /// 
 pub fn parse_for_parameters(args: &[String], expected_parameters: &[parameter_args::ClParameter]) -> Result<Vec<parameter_args::ClParameter>,Box<dyn Error>> {
@@ -29,11 +41,10 @@ pub fn parse_for_parameters(args: &[String], expected_parameters: &[parameter_ar
 
     //return an error is args is too short
     if args.len()-1 < expected_parameters.len() {
-        return Err(format!("User Error: passed args too small to possibly contain all the expected data").into());
+        return Err(format!("User Error: the amount of passed args is too small to possibly contain all the expected data").into());
     }
 
     //look at the last expected_parameters.len() elements of args
-    
     for arg in (&args[args.len()-expected_parameters.len()..]).iter().enumerate() {
         if let Some(expected_parameter) = expected_parameters.get(arg.0) {
             results.push(expected_parameter.clone())
