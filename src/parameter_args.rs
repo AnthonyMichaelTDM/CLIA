@@ -56,26 +56,26 @@ impl ClParameter {
 
 
     //getter methods
-    /// get a copy of `name`
+    /// get a reference to `name`
     /// # Example
     /// ```
     /// 
     /// ```
-    pub fn get_name(&self) -> String {self.name.to_owned()}
+    pub fn get_name(&self) -> &str {&self.name}
 
-    /// get a copy of `description`
+    /// get a reference to `description`
     /// # Example
     /// ```
     /// 
     /// ```
-    pub fn get_description(&self) -> String {self.description.to_owned()}
+    pub fn get_description(&self) -> &str {&self.description}
 
-    /// get a copy of `data`
+    /// get a reference to `data`
     /// # Example
     /// ```
     /// 
     /// ```
-    pub fn get_data(&self) -> String {self.data.to_owned()}
+    pub fn get_data(&self) -> &str {&self.data}
 
 
     //setter methods

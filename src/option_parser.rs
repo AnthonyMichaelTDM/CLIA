@@ -33,18 +33,18 @@ pub fn parse_for_options(args: &[String], valid_options: &[option_args::ClOption
         match option {
             option_args::ClOption::Flag { present:_, info } => {
                 //add flags
-                valid_flags.push(info.get_short_flag());
-                valid_flags.push(info.get_long_flag());
+                valid_flags.push(info.get_short_flag().to_string());
+                valid_flags.push(info.get_long_flag().to_string());
             },
             option_args::ClOption::FlagList { present:_, list_name:_, list:_, info } => {
                 //add flags
-                valid_flags.push(info.get_short_flag());
-                valid_flags.push(info.get_long_flag());
+                valid_flags.push(info.get_short_flag().to_string());
+                valid_flags.push(info.get_long_flag().to_string());
             },
             option_args::ClOption::FlagData { present:_, data_name:_, data:_, info } => {
                 //add flags
-                valid_flags.push(info.get_short_flag());
-                valid_flags.push(info.get_long_flag());
+                valid_flags.push(info.get_short_flag().to_string());
+                valid_flags.push(info.get_long_flag().to_string());
             },
         }
     };
@@ -66,19 +66,19 @@ pub fn parse_for_options(args: &[String], valid_options: &[option_args::ClOption
         match cl_option {
             option_args::ClOption::Flag { present, info } => {
                 //update data
-                *present = flags_in_args.contains(&info.get_short_flag()) || flags_in_args.contains(&info.get_long_flag());
+                *present = flags_in_args.contains(&info.get_short_flag().to_string()) || flags_in_args.contains(&info.get_long_flag().to_string());
             },
             option_args::ClOption::FlagList { present, list_name:_, list, info } => {
                 //update data
-                if flags_in_args.contains(&info.get_short_flag()) {
+                if flags_in_args.contains(&info.get_short_flag().to_string()) {
                     *present = true;
-                    match get_list_after_flag(args, info.get_short_flag().as_str()) {
+                    match get_list_after_flag(args, info.get_short_flag()) {
                         Ok(list_from_args) => *list = list_from_args,
                         Err(e) => return Err(e),
                     }
-                } else if flags_in_args.contains(&info.get_long_flag()){
+                } else if flags_in_args.contains(&info.get_long_flag().to_string()) {
                     *present = true;
-                    match get_list_after_flag(args, info.get_long_flag().as_str()) {
+                    match get_list_after_flag(args, info.get_long_flag()) {
                         Ok(list_from_args) => *list = list_from_args,
                         Err(e) => return Err(e),
                     }
@@ -89,15 +89,15 @@ pub fn parse_for_options(args: &[String], valid_options: &[option_args::ClOption
             },
             option_args::ClOption::FlagData { present, data_name:_, data, info } => {
                 //update data
-                if flags_in_args.contains(&info.get_short_flag()) {
+                if flags_in_args.contains(&info.get_short_flag().to_string()) {
                     *present = true;
-                    match get_data_after_flag(args, info.get_short_flag().as_str()) {
+                    match get_data_after_flag(args, info.get_short_flag()) {
                         Ok(data_from_args) => *data = data_from_args,
                         Err(e) => return Err(e),
                     }
-                } else if flags_in_args.contains(&info.get_long_flag()){
+                } else if flags_in_args.contains(&info.get_long_flag().to_string()){
                     *present = true;
-                    match get_data_after_flag(args, info.get_long_flag().as_str()) {
+                    match get_data_after_flag(args, info.get_long_flag()) {
                         Ok(data_from_args) => *data = data_from_args,
                         Err(e) => return Err(e),
                     }
