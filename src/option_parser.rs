@@ -1,23 +1,21 @@
 //! # Option parser
-//! 
+//! 'option_parser' is a module containing utilities for 
+//! parsing CLI Arguments for arguments that fall under the "Options" category
 
 use std::error::Error;
 
 use crate::option_args;
 
-/// parse arguments for OPTION flags
+/// parse args for Options 
 /// valid flags are given by valid_options
 /// returns a vector containing all of the ClOptions in valid_options, with their associated data updated
 /// 
-/// Notes: 
-/// - an options short_flag must be a `-` followed by any alphabetic ascii character
-/// - an options long_flag must be `--` followed by a word (or words separated by additional `-`'s)
+/// # Notes: 
+/// - an options `short_flag` must be a `-` followed by any alphabetic ascii character
+/// - an options `long_flag` must be `--` followed by a word (or words separated by additional `-`'s)
 /// 
 /// # Errors
 /// - `args` contains a flag (string starting with `-`) not in `valid_options` 
-/// 
-/// # Panics
-/// - a ClOption in `valid_options` contains flags formatted improperly
 /// 
 /// # Examples
 /// ```
@@ -119,7 +117,7 @@ pub fn parse_for_options(args: &[String], valid_options: &[option_args::ClOption
 /// # Errors
 /// - flag is not in args
 /// - flag is last element in args
-/// - element following flag in args starts with a `-` (is another flag)
+/// - element following flag in args starts with a `-` (is anparameter flag)
 /// 
 /// # Examples
 /// ```
@@ -147,13 +145,13 @@ pub fn get_list_after_flag<'a>(args: &[String], flag: &'a str) -> Result<Vec<Str
         Err(e) => return Err(e),
     }
 
-    //if there is no list after the flag (no more arguments or next argument is another flag)
+    //if there is no list after the flag (no more arguments or next argument is anparameter flag)
     //flag is at end of list
     match args.get(flag_position+1) {
         Some(arg) => arg_after_flag = arg.clone(),
         None => return Err(format!("No arguments after flag({}) in args({:?})", flag, args).into()),
     }
-    //arg following the flag is another flag
+    //arg following the flag is anparameter flag
     if arg_after_flag.starts_with("-") {
         return Err(format!("No list found after flag({}) in args({:?})",flag,args).into());
     }
@@ -161,15 +159,21 @@ pub fn get_list_after_flag<'a>(args: &[String], flag: &'a str) -> Result<Vec<Str
     //create and return list from arg_after_flag
     return Ok(
         arg_after_flag.split(list_separator) //split the string up at list_separators
-        .filter_map(|item| (!item.is_empty()).then(|| item.to_string())).collect() //remove empty items, convert others to Strings, and collect
+        .filter_map(|item| (!item.is_empty()).then(|| item.to_string())).collect() //remove empty items, convert parameters to Strings, and collect
     );
 }
+
 /// gets the data after flag from command line arguments (args), if there is one
 /// 
 /// # Errors
 /// - flag is not in args
 /// - flag is last element in args
-/// - element following flag in args starts with a `-` (is another flag)
+/// - element following flag in args starts with a `-` (is anparameter flag)
+/// 
+/// # Examples
+/// ```
+/// 
+/// ```
 pub fn get_data_after_flag<'a>(args: &[String], flag: &'a str) -> Result<String,Box<dyn Error>> {
     //DATA
     let flag_position:usize;
@@ -180,13 +184,13 @@ pub fn get_data_after_flag<'a>(args: &[String], flag: &'a str) -> Result<String,
         Err(e) => return Err(e),
     }
 
-    //if there is no list after the flag (no more arguments or next argument is another flag)
+    //if there is no list after the flag (no more arguments or next argument is anparameter flag)
     //flag is at end of list
     match args.get(flag_position+1) {
         Some(arg) => arg_after_flag = arg.clone(),
         None => return Err(format!("No arguments after flag({}) in args({:?})", flag, args).into()),
     }
-    //arg following the flag is another flag
+    //arg following the flag is anparameter flag
     if arg_after_flag.starts_with("-") {
         return Err(format!("No list found after flag({}) in args({:?})",flag,args).into());
     }

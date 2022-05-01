@@ -7,7 +7,7 @@
 //! - flags w/ lists (ei -f <comma separated list> )
 //! - flags w/ data (ei --format=NUMERIC)
 //! 
-//! and Others:
+//! and Parameters:
 //! - (ei a file path, a string, etc.)
 //! 
 //! ### 
@@ -26,6 +26,10 @@ pub struct ClOptionInfo {
 }
 impl ClOptionInfo {
     /// creates a new ClOptionInfo with the given info
+    /// # Examples
+    /// ```
+    /// 
+    /// ```
     pub fn new(short_flag: &str, long_flag: &str, description: &str) -> Result<ClOptionInfo,Box<dyn Error>> {
         let info = ClOptionInfo {
             short_flag: short_flag.to_string(),
@@ -40,11 +44,16 @@ impl ClOptionInfo {
         }
     }
 
-    /// returns `true` is both flags are formatted properly, `false` otherwise
+    /// returns `true` is both flags are formatted properly, `false` parameterwise
     fn are_flags_formatted_properly(&self) -> bool {
+        //if both flags are empty, return false
+        if self.short_flag.is_empty() && self.long_flag.is_empty() {
+            return false;
+        }
+
         //return error if flags aren't valid
-        if (self.short_flag.chars().any( |c| !(c.is_ascii_alphabetic()|| c.eq(&'-')) )  ||  ( !self.short_flag.is_empty() && (!self.short_flag.starts_with("-") || self.short_flag.len()!=2) )) //if short flag: contains invalid characters OR (isn't empty AND (doesn't start with '-' OR isn't 2 characters long))
-        || (self.long_flag.chars().any( |c| !(c.is_ascii_alphabetic() || c.eq(&'-')||c.eq(&'=')) )  ||  ( !self.long_flag.is_empty() && !self.long_flag.starts_with("--")) )//if long flag: contain invalid characters OR (isn't empty AND deosn't start with "--")
+        if ( self.short_flag.chars().any( |c| !(c.is_ascii_alphabetic() || c.eq(&'-')) ) ||   ( !self.short_flag.is_empty() &&(!self.short_flag.starts_with("-") || self.short_flag.len()!=2)) ) //if short flag: contains invalid characters OR (isn't empty AND (doesn't start with '-' OR isn't 2 characters long))
+        || ( self.long_flag.chars().any(  |c| !(c.is_ascii_alphabetic() || c.eq(&'-')) ) ||   ( !self.long_flag.is_empty()  && !self.long_flag.starts_with("--")) )//if long flag: contain invalid characters OR (isn't empty AND deosn't start with "--")
         { //either flags are invalid:
             return false;
         } else {
@@ -53,10 +62,22 @@ impl ClOptionInfo {
     }
 
     /// returns a copy of the short_flag
+    /// # Examples
+    /// ```
+    /// 
+    /// ```
     pub fn get_short_flag(&self) -> String {self.short_flag.clone()}
     /// returns a copy of the long_flag
+    /// # Examples
+    /// ```
+    /// 
+    /// ```
     pub fn get_long_flag(&self) -> String {self.long_flag.clone()}
     /// returns a copy of the description
+    /// # Examples
+    /// ```
+    /// 
+    /// ```
     pub fn get_descriptioon(&self) -> String {self.description.clone()}
 
 }
@@ -88,7 +109,7 @@ pub enum ClOption {
 impl ClOption {
     /// Creates an instruction line for this option, usually used for documentation or manuals
     /// 
-    /// #Examples
+    /// # Examples
     /// ```
     /// let flag_info = argument_parser::option_args::ClOptionInfo::new("-r", "--recursive", "Search through subdirectories recursively").unwrap();
     /// let flag_option = argument_parser::option_args::ClOption::new_flag(&flag_info);
@@ -208,15 +229,37 @@ impl ClOption {
     }
 
     
+    //get methods
+    pub fn get_info(&self) -> ClOptionInfo {
+        match self {
+            Self::Flag { present:_, info } => info.to_owned(),
+            Self::FlagList { present:_, list_name:_, list:_, info } => info.to_owned(),
+            Self::FlagData { present:_, data_name:_, data:_, info } => info.to_owned(),
+        }
+    }
+
+
     /// Creates and returns new ClOption::Flag with the given info
+    /// # Examples
+    /// ```
+    /// 
+    /// ```
     pub fn new_flag(info: &ClOptionInfo) -> ClOption {
         return ClOption::Flag { present: false, info: info.clone()};
     }
     /// Creates and returns new ClOption::FlagList with the given info
+    /// # Examples
+    /// ```
+    /// 
+    /// ```
     pub fn new_flag_list(info: &ClOptionInfo, list_name: &str) -> ClOption {
         return ClOption::FlagList { present: false, list_name: list_name.to_ascii_uppercase(), list: Vec::new(), info: info.clone()};
     }
     /// Creates and returns new ClOption::FlagData with the given info
+    /// # Examples
+    /// ```
+    /// 
+    /// ```
     pub fn new_flag_data(info: &ClOptionInfo, data_name: &str) -> ClOption {
         return ClOption::FlagData { present: false, data_name: data_name.to_ascii_uppercase(), data: String::new(), info: info.clone()};
     }
