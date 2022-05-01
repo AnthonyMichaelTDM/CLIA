@@ -18,17 +18,69 @@
 use std::error::Error;
 
 /// stores the short_flag, long_flag, and description of an option
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct ClOptionInfo {
     short_flag: String,
     long_flag: String,
     description:String,
 }
 impl ClOptionInfo {
-    /// creates a new ClOptionInfo with the given info
+    /// creates a new ClOptionInfo with the given `short_flag`, `long_flag`, and `description`
+    /// 
+    /// # Notes: 
+    /// - the `short_flag` must be a `-` followed by any alphabetic ascii character
+    /// - the `long_flag` must be `--` followed by a word (or words separated by additional `-`'s)
+    /// 
+    /// see below for examples
+    /// 
+    /// # Errors
+    /// - `short_flag` and/or `long_flag` are formatted improperly
+    /// 
     /// # Examples
     /// ```
+    /// use clia::option_args::ClOptionInfo;
     /// 
+    /// let short_flag = "-r";
+    /// let long_flag = "--recursive";
+    /// let description = "Search through subdirectories";
+    /// 
+    /// let example_option_info =  ClOptionInfo::new(short_flag, long_flag, description).unwrap();
+    /// 
+    /// assert_eq!(example_option_info.get_short_flag(), short_flag);
+    /// assert_eq!(example_option_info.get_long_flag(), long_flag);
+    /// assert_eq!(example_option_info.get_description(), description);
+    /// ```
+    /// Note: short_flag and long_flag must be formatted properly, if they aren't then an error will be returned
+    /// ```
+    /// use clia::option_args::ClOptionInfo;
+    /// 
+    /// // examples of improperly formatted short_flags
+    /// assert!(ClOptionInfo::new("-", "--recursive", "Search through subdirectories").is_err()); // too short
+    /// assert!(ClOptionInfo::new("r", "--recursive", "Search through subdirectories").is_err()); // doesn't start with a '-' and is too short
+    /// assert!(ClOptionInfo::new("rr", "--recursive", "Search through subdirectories").is_err()); // doesn't start with a '-'
+    /// assert!(ClOptionInfo::new("-recursive", "--recursive", "Search through subdirectories").is_err()); // -recursive is more than 2 chacters long
+    /// assert!(ClOptionInfo::new("-2", "--recursive", "Search through subdirectories").is_err()); //# isn't an alphabetic ascii character
+    /// assert!(ClOptionInfo::new("-#", "--recursive", "Search through subdirectories").is_err()); //# isn't an alphabetic ascii character
+    /// assert!(ClOptionInfo::new("", "", "Search through subdirectories").is_err()); //both flags are empty
+    /// 
+    /// // examples of properly formatted short_flags
+    /// assert!(ClOptionInfo::new("-r", "--recursive", "Search through subdirectories").is_ok());
+    /// assert!(ClOptionInfo::new("-R", "--recursive", "Search through subdirectories").is_ok());
+    /// assert!(ClOptionInfo::new("", "--recursive", "Search through subdirectories").is_ok()); //yes, short_flag can be empty if there is a long_flag
+    /// 
+    /// 
+    /// // examples of improperly formatted long_flags
+    /// assert!(ClOptionInfo::new("-r", "-recursive", "Search through subdirectories").is_err()); //doesn't start with '--'
+    /// assert!(ClOptionInfo::new("-r", "recursive", "Search through subdirectories").is_err()); //doesn't start with '--'
+    /// assert!(ClOptionInfo::new("-r", "--recursive-7", "Search through subdirectories").is_err()); //7 isn't a valid character
+    /// assert!(ClOptionInfo::new("-r", "--recursive-%", "Search through subdirectories").is_err()); //% isn't a valid character
+    /// assert!(ClOptionInfo::new("", "", "Search through subdirectories").is_err()); //both flags are empty
+    /// 
+    /// 
+    /// // examples of properly formatted long_flags
+    /// assert!(ClOptionInfo::new("-r", "--recursive", "Search through subdirectories").is_ok());
+    /// assert!(ClOptionInfo::new("-r", "--Recursive", "Search through subdirectories").is_ok());
+    /// assert!(ClOptionInfo::new("-r", "--Recurse-through-subfolders", "Search through subdirectories").is_ok()); //multiple words should be separated with '-'
     /// ```
     pub fn new(short_flag: &str, long_flag: &str, description: &str) -> Result<ClOptionInfo,Box<dyn Error>> {
         let info = ClOptionInfo {
@@ -64,19 +116,31 @@ impl ClOptionInfo {
     /// get a reference to  `short_flag`
     /// # Examples
     /// ```
+    /// use clia::option_args::ClOptionInfo;
     /// 
+    /// let example_info: ClOptionInfo = ClOptionInfo::new("-r", "--recursive", "Search through subdirectories").unwrap();
+    /// 
+    /// assert_eq!(example_info.get_short_flag(), "-r");
     /// ```
     pub fn get_short_flag(&self) -> &str {&self.short_flag}
     /// get a reference to  `long_flag`
     /// # Examples
     /// ```
+    /// use clia::option_args::ClOptionInfo;
     /// 
+    /// let example_info: ClOptionInfo = ClOptionInfo::new("-r", "--recursive", "Search through subdirectories").unwrap();
+    /// 
+    /// assert_eq!(example_info.get_long_flag(), "--recursive");
     /// ```
     pub fn get_long_flag(&self) -> &str {&self.long_flag}
     /// get a reference to  `description`
     /// # Examples
     /// ```
+    /// use clia::option_args::ClOptionInfo;
     /// 
+    /// let example_info: ClOptionInfo = ClOptionInfo::new("-r", "--recursive", "Search through subdirectories").unwrap();
+    /// 
+    /// assert_eq!(example_info.get_description(), "Search through subdirectories");
     /// ```
     pub fn get_description(&self) -> &str {&self.description}
 
@@ -84,7 +148,7 @@ impl ClOptionInfo {
 
 /// consolidates the data of, and utilities for, the different types of options a command line program may use
 /// the types of options a program may want to get from command line arguments
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum ClOption {
     /// for options like '-r' or '--recursive'
     Flag {
@@ -111,14 +175,16 @@ impl ClOption {
     /// 
     /// # Examples
     /// ```
-    /// let flag_info = argument_parser::option_args::ClOptionInfo::new("-r", "--recursive", "Search through subdirectories recursively").unwrap();
-    /// let flag_option = argument_parser::option_args::ClOption::new_flag(&flag_info);
+    /// use clia::option_args::{ClOptionInfo, ClOption};
     /// 
-    /// let flag_list_info = argument_parser::option_args::ClOptionInfo::new("-l", "--look-for", "Comma separated list of strings to look for").unwrap();
-    /// let flag_list_option = argument_parser::option_args::ClOption::new_flag_list(&flag_list_info, "LIST");
+    /// let flag_info = ClOptionInfo::new("-r", "--recursive", "Search through subdirectories recursively").unwrap();
+    /// let flag_option = ClOption::new_flag(&flag_info);
     /// 
-    /// let flag_data_info = argument_parser::option_args::ClOptionInfo::new("-f", "--format", "Format to print output in, valid formats are: DEFAULT, BULLET, and NUMERIC").unwrap();
-    /// let flag_data_option = argument_parser::option_args::ClOption::new_flag_data(&flag_data_info, "FORMAT");
+    /// let flag_list_info = ClOptionInfo::new("-l", "--look-for", "Comma separated list of strings to look for").unwrap();
+    /// let flag_list_option = ClOption::new_flag_list(&flag_list_info, "LIST");
+    /// 
+    /// let flag_data_info = ClOptionInfo::new("-f", "--format", "Format to print output in, valid formats are: DEFAULT, BULLET, and NUMERIC").unwrap();
+    /// let flag_data_option = ClOption::new_flag_data(&flag_data_info, "FORMAT");
     /// 
     /// assert_eq!(flag_option.gen_help_line(),      String::from("    -r, --recursive                   Search through subdirectories recursively"));
     /// assert_eq!(flag_list_option.gen_help_line(), String::from("    -l, --look-for <LIST>...          Comma separated list of strings to look for"));
@@ -232,9 +298,14 @@ impl ClOption {
     //get methods
 
     /// get a reference to `info`
-    /// # Example
+    /// # Examples
     /// ```
+    /// use clia::option_args::{ClOptionInfo, ClOption};
     /// 
+    /// let info = ClOptionInfo::new("-r", "--recursive", "Search through subdirectories").unwrap();
+    /// let option = ClOption::new_flag(&info);
+    /// 
+    /// assert_eq!(option.get_info(), &ClOptionInfo::new("-r", "--recursive", "Search through subdirectories").unwrap());
     /// ```
     pub fn get_info(&self) -> &ClOptionInfo {
         match self {
@@ -246,19 +317,33 @@ impl ClOption {
     /// get a reference to  `short_flag`
     /// # Examples
     /// ```
+    /// use clia::option_args::{ClOptionInfo, ClOption};
     /// 
+    /// let example_option: ClOption = ClOption::new_flag( &ClOptionInfo::new("-r", "--recursive", "Search through subdirectories").unwrap() );
+    /// 
+    /// assert_eq!(example_option.get_short_flag(), "-r");
     /// ```
     pub fn get_short_flag(&self) -> &str {self.get_info().get_short_flag()}
+
     /// get a reference to  `long_flag`
     /// # Examples
     /// ```
+    /// use clia::option_args::{ClOptionInfo, ClOption};
     /// 
+    /// let example_option: ClOption = ClOption::new_flag( &ClOptionInfo::new("-r", "--recursive", "Search through subdirectories").unwrap() );
+    /// 
+    /// assert_eq!(example_option.get_long_flag(), "--recursive");
     /// ```
     pub fn get_long_flag(&self) -> &str {self.get_info().get_long_flag()}
+
     /// get a reference to  `description`
     /// # Examples
     /// ```
+    /// use clia::option_args::{ClOptionInfo, ClOption};
     /// 
+    /// let example_option: ClOption = ClOption::new_flag( &ClOptionInfo::new("-r", "--recursive", "Search through subdirectories").unwrap() );
+    /// 
+    /// assert_eq!(example_option.get_description(), "Search through subdirectories");
     /// ```
     pub fn get_description(&self) -> &str {self.get_info().get_description()}
 
@@ -266,7 +351,9 @@ impl ClOption {
     /// Creates and returns new ClOption::Flag with the given info
     /// # Examples
     /// ```
+    /// use clia::option_args::{ClOptionInfo, ClOption};
     /// 
+    /// let example_option: ClOption = ClOption::new_flag(&ClOptionInfo::new("-r", "--recursive", "Search through subdirectories").unwrap() ); 
     /// ```
     pub fn new_flag(info: &ClOptionInfo) -> ClOption {
         return ClOption::Flag { present: false, info: info.clone()};
@@ -274,7 +361,9 @@ impl ClOption {
     /// Creates and returns new ClOption::FlagList with the given info
     /// # Examples
     /// ```
+    /// use clia::option_args::{ClOptionInfo, ClOption};
     /// 
+    /// let example_option: ClOption = ClOption::new_flag_list( &ClOptionInfo::new("-f", "--filter", "Comma separated list of extensions, will only count lines of files with these extensions").unwrap(), "EXTENSIONS"); 
     /// ```
     pub fn new_flag_list(info: &ClOptionInfo, list_name: &str) -> ClOption {
         return ClOption::FlagList { present: false, list_name: list_name.to_ascii_uppercase(), list: Vec::new(), info: info.clone()};
@@ -282,7 +371,9 @@ impl ClOption {
     /// Creates and returns new ClOption::FlagData with the given info
     /// # Examples
     /// ```
+    /// use clia::option_args::{ClOptionInfo, ClOption};
     /// 
+    /// let example_option: ClOption = ClOption::new_flag_list( &ClOptionInfo::new("-F", "--format", "Format the output in a list, valid formats are: DEFAULT, BULLET, MARKDOWN, and NUMERIC").unwrap(), "FORMAT"); 
     /// ```
     pub fn new_flag_data(info: &ClOptionInfo, data_name: &str) -> ClOption {
         return ClOption::FlagData { present: false, data_name: data_name.to_ascii_uppercase(), data: String::new(), info: info.clone()};
