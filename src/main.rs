@@ -1,41 +1,41 @@
 use std::env;
 
-use argument_parser;
+use cli_argument_parser;
 
 /// this is just an example of using this crate
 fn main() {
     /*
     first step is to define options and parameters
     */
-    let mut valid_options: Vec<argument_parser::option_args::ClOption> = Vec::new();
-    let mut expected_parameters: Vec<argument_parser::parameter_args::ClParameter> = Vec::new();
+    let mut valid_options: Vec<cli_argument_parser::option_args::ClOption> = Vec::new();
+    let mut expected_parameters: Vec<cli_argument_parser::parameter_args::ClParameter> = Vec::new();
 
     // define options
-    valid_options.push( argument_parser::option_args::ClOption::new_flag_list( 
-        &argument_parser::option_args::ClOptionInfo::new(
+    valid_options.push( cli_argument_parser::option_args::ClOption::new_flag_list( 
+        &cli_argument_parser::option_args::ClOptionInfo::new(
             "-f", 
             "--filter", 
             "Comma separated list of extensions, will only count lines of files with these extensions"
         ).unwrap(),
         "EXTENSIONS"
     ));
-    valid_options.push( argument_parser::option_args::ClOption::new_flag_data( 
-        &argument_parser::option_args::ClOptionInfo::new(
+    valid_options.push( cli_argument_parser::option_args::ClOption::new_flag_data( 
+        &cli_argument_parser::option_args::ClOptionInfo::new(
             "-F", 
             "--format", 
             "Format the output in a list, valid formats are: DEFAULT, BULLET, MARKDOWN, and NUMERIC"
         ).unwrap(),
         "FORMAT"
     ));
-    valid_options.push( argument_parser::option_args::ClOption::new_flag( 
-        &argument_parser::option_args::ClOptionInfo::new(
+    valid_options.push( cli_argument_parser::option_args::ClOption::new_flag( 
+        &cli_argument_parser::option_args::ClOptionInfo::new(
             "-r", 
             "--recursive", 
             "Search through subdirectories"
         ).unwrap()
     ));
-    valid_options.push( argument_parser::option_args::ClOption::new_flag( 
-        &argument_parser::option_args::ClOptionInfo::new(
+    valid_options.push( cli_argument_parser::option_args::ClOption::new_flag( 
+        &cli_argument_parser::option_args::ClOptionInfo::new(
             "-h", 
             "--help", 
             "Prints help information"
@@ -43,11 +43,11 @@ fn main() {
     ));
 
     // define parameters
-    expected_parameters.push( argument_parser::parameter_args::ClParameter::new(
+    expected_parameters.push( cli_argument_parser::parameter_args::ClParameter::new(
         "PATH",
         "Path to file/folder to search"
     ));
-    expected_parameters.push( argument_parser::parameter_args::ClParameter::new(
+    expected_parameters.push( cli_argument_parser::parameter_args::ClParameter::new(
         "QUERY",
         "String to search for, all the stuff after the path wrap in \"'s if it contains spaces"
     ));
@@ -61,9 +61,9 @@ fn main() {
 
     //call parser
     let arg_parser;
-    match argument_parser::Parser::new(&args, &valid_options, &expected_parameters) {
+    match cli_argument_parser::Parser::new(&args, &valid_options, &expected_parameters) {
         Ok(arg_par) => arg_parser = arg_par,
-        Err(e) => {println!("{}", argument_parser::Parser::help("foo.exe", "Anthony Rubick", "Just here as an example of things you can do", &valid_options, &expected_parameters)); panic!("{}", e);},
+        Err(e) => {println!("{}", cli_argument_parser::Parser::help("foo.exe", "Anthony Rubick", "Just here as an example of things you can do", &valid_options, &expected_parameters)); panic!("{}", e);},
     }
 
     /*
@@ -78,7 +78,7 @@ fn main() {
     */
 
     if found_options.iter().any(|opt| opt.get_info().get_short_flag().eq("-h")) {
-        println!("{}", argument_parser::Parser::help("foo.exe", "Anthony Rubick", "Just here as an example of things you can do", &valid_options, &expected_parameters));
+        println!("{}", cli_argument_parser::Parser::help("foo.exe", "Anthony Rubick", "Just here as an example of things you can do", &valid_options, &expected_parameters));
     }
 
     //how you handle the rest of the options / parameters is up to you
