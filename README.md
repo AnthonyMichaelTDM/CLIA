@@ -1,5 +1,5 @@
-# CLIO
-pronouced KLEE-o
+# CLIA
+pronouced KLEE-uh
 
 Rust command-line argument parser with no extra dependencies.
 
