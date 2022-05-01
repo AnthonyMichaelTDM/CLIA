@@ -76,7 +76,23 @@ impl Parser {
     /// 
     /// # Examples
     /// ```
+    /// use std::env; //allows access to the process's environment
     /// 
+    /// use clia;
+    /// 
+    /// //collect cli arguments
+    /// let args: Vec<String> = env::args().collect();
+    /// 
+    /// //define valid options
+    /// let valid_options: Vec<clia::option_args::ClOption> = Vec::new();
+    /// //...
+    /// 
+    /// //define expected parameters
+    /// let expected_parameters: Vec<clia::parameter_args::ClParameter> = Vec::new();
+    /// //..
+    /// 
+    /// //create a new parser
+    /// let parser = clia::Parser::new(&args, &valid_options, &parameter_args);
     /// ```
     pub fn new(args: &[String], valid_options: &[option_args::ClOption], expected_parameters: &[parameter_args::ClParameter]) -> Result<Parser, Box<dyn Error>> {
         //DATA
