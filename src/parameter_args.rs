@@ -49,10 +49,10 @@ impl ClParameter {
     /// let parameter_1 = argument_parser::parameter_args::ClParameter::new("PATH", "Path to search in"); 
     /// let parameter_2 = argument_parser::parameter_args::ClParameter::new("QUERY", "String to search for, all the stuff after the path wrap in \"'s if it contains spaces");
     /// 
-    /// assert_eq!(parameter_1.gen_help_line(),     String::from("    PATH:\n    Path to search in"));
-    /// assert_eq!(parameter_2.gen_help_line(),     String::from("    QUERY:\n    String to search for, all the stuff after the path wrap in \"'s if it contains spaces"));
+    /// assert_eq!(parameter_1.gen_help_line(),     String::from("    PATH:\n        Path to search in"));
+    /// assert_eq!(parameter_2.gen_help_line(),     String::from("    QUERY:\n        String to search for, all the stuff after the path wrap in \"'s if it contains spaces"));
     /// ```
-    pub fn gen_help_line(&self) -> String {format!("    {}:\n    {}",self.name, self.description)}
+    pub fn gen_help_line(&self) -> String {format!("    {}:\n        {}",self.name, self.description)}
 
 
     //getter methods

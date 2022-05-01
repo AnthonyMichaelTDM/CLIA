@@ -127,12 +127,18 @@ impl Parser {
     /// 
     /// ```
     pub fn help(title: &str, author: &str, program_description: &str, valid_options: &[option_args::ClOption], expected_parameters: &[parameter_args::ClParameter]) -> String {
-        format!("{}\n{}\n\n{}\n\nUSAGE: {} [OPTIONS] {}\n\nOPTIONS:\n{}\n\nPARAMETER ARGUMENTS:\n{}",
+        format!("{}\n{}\n\n{}\n\nUSAGE: {} [OPTIONS]... {}\n\nOPTIONS:\n{}\nPARAMETER ARGUMENTS:\n{}",
             title,
             author,
             program_description,
             title,
-            {""},
+            {
+                let mut param_usage: String = String::new();
+                for parameter in expected_parameters.into_iter() {
+                    param_usage += format!("[{}] ",parameter.get_name()).as_str();
+                }
+                param_usage
+            },
             {
                 let mut option_help: String = String::new();
                 for option in valid_options.iter() {
@@ -142,12 +148,12 @@ impl Parser {
                 option_help
             },
             {
-                let mut parameter: String = String::new();
+                let mut parameter_help: String = String::new();
                 for option in expected_parameters.iter() {
-                    parameter += &option.gen_help_line();
-                    parameter += "\n";
+                    parameter_help += &option.gen_help_line();
+                    parameter_help += "\n";
                 }
-                parameter
+                parameter_help
             },
         )
     }

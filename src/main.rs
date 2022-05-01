@@ -1,6 +1,6 @@
 use std::env;
 
-use clio::{option_args::{ClOption,ClOptionInfo},parameter_args::ClParameter,Parser};
+use clia::{option_args::{ClOption,ClOptionInfo},parameter_args::ClParameter,Parser};
 
 /// this is just an example of using this crate
 fn main() {
@@ -11,6 +11,7 @@ fn main() {
     let mut expected_parameters: Vec<ClParameter> = Vec::new();
 
     // define options
+    //  this is an example of making an option with a list
     valid_options.push( ClOption::new_flag_list( 
         &ClOptionInfo::new(
             "-f", 
@@ -19,6 +20,7 @@ fn main() {
         ).unwrap(),
         "EXTENSIONS"
     ));
+    //  this is an example of making an option with some data
     valid_options.push( ClOption::new_flag_data( 
         &ClOptionInfo::new(
             "-F", 
@@ -27,6 +29,7 @@ fn main() {
         ).unwrap(),
         "FORMAT"
     ));
+    //  this is an example of making a simple option
     valid_options.push( ClOption::new_flag( 
         &ClOptionInfo::new(
             "-r", 
@@ -34,6 +37,7 @@ fn main() {
             "Search through subdirectories"
         ).unwrap()
     ));
+    //  this is an example of making a simple option
     valid_options.push( ClOption::new_flag( 
         &ClOptionInfo::new(
             "-h", 
@@ -56,18 +60,17 @@ fn main() {
     /*
     second step is to collect CLI Arguments and call the parser
     */
-    //this is how you'd do it, but we're just gonna not
-    let args: Vec<String> = env::args().collect(); //read the argument values, and collect them into a string vector
+    let args: Vec<String> = env::args().collect(); //read the argument values from env, and collect them into a string vector
 
     //call parser
     let arg_parser;
     match Parser::new(&args, &valid_options, &expected_parameters) {
         Ok(arg_par) => arg_parser = arg_par,
-        Err(e) => {println!("{}", Parser::help("foo.exe", "Anthony Rubick", "Just here as an example of things you can do", &valid_options, &expected_parameters)); panic!("{}", e);},
+        Err(e) => {println!("{}", Parser::help("foo.exe", "by Anthony Rubick", "Just here as an example of things you can do", &valid_options, &expected_parameters)); panic!("{}", e);},
     }
 
     /*
-    third step is to access the "found" arguments from the parser
+    third step is to access the "found" fields from the parser
     */
     //store output from parser
     let found_options = arg_parser.get_option_arguments_found();
@@ -78,7 +81,7 @@ fn main() {
     */
 
     if found_options.iter().any(|opt| opt.get_info().get_short_flag().eq("-h")) {
-        println!("{}", Parser::help("foo.exe", "Anthony Rubick", "Just here as an example of things you can do", &valid_options, &expected_parameters));
+        println!("{}", Parser::help("foo.exe", "by Anthony Rubick", "Just here as an example of things you can do", &valid_options, &expected_parameters));
     }
 
     //how you handle the rest of the options / parameters is up to you
