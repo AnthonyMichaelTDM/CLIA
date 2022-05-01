@@ -61,24 +61,24 @@ impl ClOptionInfo {
         }
     }
 
-    /// returns a copy of the short_flag
+    /// get a reference to  `short_flag`
     /// # Examples
     /// ```
     /// 
     /// ```
-    pub fn get_short_flag(&self) -> String {self.short_flag.clone()}
-    /// returns a copy of the long_flag
+    pub fn get_short_flag(&self) -> &str {&self.short_flag}
+    /// get a reference to  `long_flag`
     /// # Examples
     /// ```
     /// 
     /// ```
-    pub fn get_long_flag(&self) -> String {self.long_flag.clone()}
-    /// returns a copy of the description
+    pub fn get_long_flag(&self) -> &str {&self.long_flag}
+    /// get a reference to  `description`
     /// # Examples
     /// ```
     /// 
     /// ```
-    pub fn get_descriptioon(&self) -> String {self.description.clone()}
+    pub fn get_description(&self) -> &str {&self.description}
 
 }
 
@@ -230,13 +230,37 @@ impl ClOption {
 
     
     //get methods
-    pub fn get_info(&self) -> ClOptionInfo {
+
+    /// get a reference to `info`
+    /// # Example
+    /// ```
+    /// 
+    /// ```
+    pub fn get_info(&self) -> &ClOptionInfo {
         match self {
-            Self::Flag { present:_, info } => info.to_owned(),
-            Self::FlagList { present:_, list_name:_, list:_, info } => info.to_owned(),
-            Self::FlagData { present:_, data_name:_, data:_, info } => info.to_owned(),
+            Self::Flag { present:_, info } => &info,
+            Self::FlagList { present:_, list_name:_, list:_, info } => &info,
+            Self::FlagData { present:_, data_name:_, data:_, info } => &info,
         }
     }
+    /// get a reference to  `short_flag`
+    /// # Examples
+    /// ```
+    /// 
+    /// ```
+    pub fn get_short_flag(&self) -> &str {self.get_info().get_short_flag()}
+    /// get a reference to  `long_flag`
+    /// # Examples
+    /// ```
+    /// 
+    /// ```
+    pub fn get_long_flag(&self) -> &str {self.get_info().get_long_flag()}
+    /// get a reference to  `description`
+    /// # Examples
+    /// ```
+    /// 
+    /// ```
+    pub fn get_description(&self) -> &str {self.get_info().get_description()}
 
 
     /// Creates and returns new ClOption::Flag with the given info

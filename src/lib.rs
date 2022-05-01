@@ -175,32 +175,32 @@ impl Parser {
     }
 
     //getter methods
-    /// get a copy of `valid_options`
+    /// get a reference to `valid_options`
     /// # Example 
     /// ```
     /// 
     /// ```
-    pub fn get_valid_options(&self) -> Vec<option_args::ClOption> {self.valid_options.to_owned()}
+    pub fn get_valid_options(&self) -> &Vec<option_args::ClOption> {&self.valid_options}
 
-    /// get a copy of `expected_parameters`
+    /// get a reference to `expected_parameters`
     /// # Example 
     /// ```
     /// 
     /// ```
-    pub fn get_expected_parameters(&self) -> Vec<parameter_args::ClParameter> {self.expected_parameters.to_owned()}
+    pub fn get_expected_parameters(&self) -> &Vec<parameter_args::ClParameter> {&self.expected_parameters}
 
-    /// get a copy of `option_arguments_found`
+    /// get a reference to `option_arguments_found`
     /// # Example 
     /// ```
     /// 
     /// ```
-    pub fn get_option_arguments_found(&self) -> Vec<option_args::ClOption> {self.option_arguments_found.to_owned()}
+    pub fn get_option_arguments_found(&self) -> &Vec<option_args::ClOption> {&self.option_arguments_found}
 
-    /// get a copy of `parameter_arguments_found`
+    /// get a reference to `parameter_arguments_found`
     /// # Example 
     /// ```
     /// 
     /// ```
-    pub fn get_parameter_arguments_found(&self) -> Vec<parameter_args::ClParameter> {self.parameter_arguments_found.to_owned()}
+    pub fn get_parameter_arguments_found(&self) -> &Vec<parameter_args::ClParameter> {&self.parameter_arguments_found}
     
 }
