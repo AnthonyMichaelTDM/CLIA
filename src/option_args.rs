@@ -348,6 +348,115 @@ impl ClOption {
     pub fn get_description(&self) -> &str {self.get_info().get_description()}
 
 
+    /// gets a reference to `present`
+    /// 
+    /// # Examples
+    /// ```
+    /// use clia::{option_args::{ClOptionInfo, ClOption}, Parser};
+    /// 
+    /// let flag_option = ClOption::new_flag(&ClOptionInfo::new("-r", "--recursive", "Search through subdirectories recursively").unwrap());
+    /// let args: Vec<String> = vec![String::from("path/to/executable/"), String::from("-r")];
+    /// let valid_options = vec![flag_option.clone()];
+    /// let expected_parameters = Vec::new();
+    /// 
+    /// //default is false
+    /// assert_eq!(flag_option.get_present(), false );
+    /// 
+    /// //use the Parser to get updated data from args
+    /// let parser: Parser = Parser::new(&args, &valid_options, &expected_parameters).unwrap();
+    /// 
+    /// let found_flag = parser.get_option_arguments_found().get(0).unwrap();
+    /// 
+    /// //now is true
+    /// assert!(found_flag.get_present());
+    /// 
+    /// ```
+    pub fn get_present(&self) -> bool {
+        match self {
+            ClOption::Flag { present, info:_ } => *present,
+            ClOption::FlagList { present, list_name:_, list:_, info:_ } => *present,
+            ClOption::FlagData { present, data_name:_, data:_, info:_ } => *present,
+        }
+    }
+
+    /// gets a reference to `list`
+    /// # None
+    /// - returns none is self is not of type ClOption::FlagList
+    /// 
+    /// # Examples
+    /// ```
+    /// use clia::{option_args::{ClOptionInfo, ClOption}, Parser};
+    /// 
+    /// let flag_list_option = ClOption::new_flag_list(&ClOptionInfo::new("-l", "--look-for", "Comma separated list of strings to look for").unwrap(), "LIST");
+    /// let args: Vec<String> = vec!["path/to/executable/".to_string(), "-l".to_string(), "a,list,of,stuff".to_string()];
+    /// let valid_options = vec![flag_list_option.clone()];
+    /// let expected_parameters = Vec::new();
+    /// 
+    /// //default is empty
+    /// assert!( flag_list_option.get_list().unwrap().is_empty());
+    /// 
+    /// //will return a poulated vec if Parser found one
+    /// let parser: Parser = Parser::new(&args, &valid_options, &expected_parameters).unwrap();
+    /// let found_flag = parser.get_option_arguments_found().get(0).unwrap();
+    /// assert_eq!(found_flag.get_list(), Some(&vec!["a".to_string(),"list".to_string(),"of".to_string(),"stuff".to_string()]) );
+    /// 
+    /// //returns none if ClOption is not of type FlagList
+    /// let flag_option = ClOption::new_flag(&ClOptionInfo::new("-r", "--recursive", "Search through subdirectories recursively").unwrap());
+    /// assert_eq!(flag_option.get_list(), None);
+    /// 
+    /// 
+    /// ```
+    pub fn get_list(&self) ->  Option<&Vec<String>> {
+        match self {
+            ClOption::Flag { present:_, info:_ } => None,
+            ClOption::FlagList { present:_, list_name:_, list, info:_ } => Some(list),
+            ClOption::FlagData { present:_, data_name:_, data:_, info:_ } => None,
+        }
+    }
+
+    /// gets a reference to `data`
+    /// # None
+    /// - returns none is self is not of type ClOption::FlagData
+    /// 
+    /// # Examples
+    /// ```
+    /// use clia::{option_args::{ClOptionInfo, ClOption}, Parser};
+    /// let flag_data_option = ClOption::new_flag_data(&ClOptionInfo::new("-f", "--format", "Format to print output in, valid formats are: DEFAULT, BULLET, and NUMERIC").unwrap(), "FORMAT");
+    /// let args: Vec<String> = vec![String::from("path/to/executable/"), String::from("-f"), String::from("DEFAULT")];
+    /// let valid_options = vec![flag_data_option.clone()];
+    /// let expected_parameters = Vec::new();
+    /// 
+    /// //default is an empty String
+    /// assert_eq!( flag_data_option.get_data().unwrap(), &String::new());
+    /// 
+    /// //will return a poulated string if Parser found one
+    /// let parser: Parser = Parser::new(&args, &valid_options, &expected_parameters).unwrap();
+    /// let found_flag = parser.get_option_arguments_found().get(0).unwrap();
+    /// assert_eq!(found_flag.get_data(), Some(&String::from("DEFAULT")) );
+    /// 
+    /// //returns none if ClOption is not of type FlagData 
+    /// let flag_option = ClOption::new_flag(&ClOptionInfo::new("-r", "--recursive", "Search through subdirectories recursively").unwrap());
+    /// assert_eq!(flag_option.get_list(), None);
+    /// 
+    /// ```
+    pub fn get_data(&self) ->  Option<&String> {
+        match self {
+            ClOption::Flag { present:_, info:_ } => None,
+            ClOption::FlagList { present:_, list_name:_, list:_, info:_ } => None,
+            ClOption::FlagData { present:_, data_name:_, data, info:_ } => Some(data),
+        }
+    }
+
+
+    
+    
+    
+        
+
+
+
+
+
     /// Creates and returns new ClOption::Flag with the given info
     /// # Examples
     /// ```

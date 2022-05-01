@@ -16,7 +16,7 @@
 //! defining arguments that fall under the "Parameters" category
 
 /// stores data related to parameter arguments
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct ClParameter {
     name: String,
     description: String,
