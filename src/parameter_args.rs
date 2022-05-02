@@ -16,7 +16,7 @@
 //! defining arguments that fall under the "Parameters" category
 
 #![warn(missing_docs)]
-#![warn(missing_doc_code_examples)]
+#![warn(rustdoc::missing_doc_code_examples)]
 
 /// stores data related to parameter arguments
 #[derive(Clone, Debug, PartialEq)]
@@ -37,10 +37,10 @@ impl ClParameter {
     /// 
     /// let name = "PATH";
     /// let description = "Path of file/folder to search";
-    /// let example_parameter: ClParameter = ClParameter::new(name, description);
+    /// let example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
     /// 
-    /// assert_eq!(example_parameter.get_name(), name);
-    /// assert_eq!(example_parameter.get_description(), description);
+    /// assert_eq!(example_parameter.get_name(), "PATH");
+    /// assert_eq!(example_parameter.get_description(), "Path of file/folder to search");
     /// assert_eq!(example_parameter.get_data(), "");
     /// ```
     pub fn new(name: &str, description: &str) -> ClParameter {
@@ -73,10 +73,9 @@ impl ClParameter {
     /// # Examples
     /// ```
     /// use clia::parameter_args::ClParameter;
-    /// 
-    /// let example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
-    /// 
-    /// assert_eq!(example_parameter.get_name(), "PATH");
+    /// //...
+    ///     let example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
+    ///     assert_eq!(example_parameter.get_name(), "PATH");
     /// ```
     pub fn get_name(&self) -> &str {&self.name}
 
@@ -84,10 +83,9 @@ impl ClParameter {
     /// # Examples
     /// ```
     /// use clia::parameter_args::ClParameter;
-    /// 
-    /// let example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
-    /// 
-    /// assert_eq!(example_parameter.get_description(), "Path of file/folder to search");
+    /// //...
+    ///     let example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
+    ///     assert_eq!(example_parameter.get_description(), "Path of file/folder to search");
     /// ```
     pub fn get_description(&self) -> &str {&self.description}
 
@@ -95,10 +93,9 @@ impl ClParameter {
     /// # Examples
     /// ```
     /// use clia::parameter_args::ClParameter;
-    /// 
-    /// let example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
-    /// 
-    /// assert_eq!(example_parameter.get_data(), "");
+    /// //...
+    ///     let example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
+    ///     assert_eq!(example_parameter.get_data(), "");
     /// ```
     pub fn get_data(&self) -> &str {&self.data}
 
@@ -109,15 +106,12 @@ impl ClParameter {
     /// # Examples
     /// ``` 
     /// use clia::parameter_args::ClParameter;
-    /// 
-    /// let mut example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
-    /// 
-    /// assert_eq!(example_parameter.get_name(), "PATH");
-    /// 
-    /// example_parameter.set_name("NewName");
-    /// 
-    /// assert_eq!(example_parameter.get_name(), "NEWNAME"); //notice that the new name is uppercased
-    /// 
+    /// //...
+    ///     let mut example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
+    ///     assert_eq!(example_parameter.get_name(), "PATH");
+    ///     
+    ///     example_parameter.set_name("NewName");
+    ///     assert_eq!(example_parameter.get_name(), "NEWNAME"); //notice that the new name is uppercased
     /// ```
     pub fn set_name(&mut self, new_name: &str) {self.name = new_name.to_ascii_uppercase().to_string();}
 
@@ -125,15 +119,12 @@ impl ClParameter {
     /// # Examples
     /// ``` 
     /// use clia::parameter_args::ClParameter;
+    /// //...
+    ///     let mut example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
+    ///     assert_eq!(example_parameter.get_description(), "Path of file/folder to search");
     /// 
-    /// let mut example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
-    /// 
-    /// assert_eq!(example_parameter.get_description(), "Path of file/folder to search");
-    /// 
-    /// example_parameter.set_description("new description");
-    /// 
-    /// assert_eq!(example_parameter.get_description(), "new description");
-    /// 
+    ///     example_parameter.set_description("new description");
+    ///     assert_eq!(example_parameter.get_description(), "new description");
     /// ```
     pub fn set_description(&mut self, new_description: &str) {self.description = new_description.to_string();}
 
@@ -141,15 +132,12 @@ impl ClParameter {
     /// # Examples
     /// ``` 
     /// use clia::parameter_args::ClParameter;
-    /// 
-    /// let mut example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
-    /// 
-    /// assert_eq!(example_parameter.get_data(), "");
-    /// 
-    /// example_parameter.set_data("new data");
-    /// 
-    /// assert_eq!(example_parameter.get_data(), "new data");
-    /// 
+    /// //...
+    ///     let mut example_parameter: ClParameter = ClParameter::new("PATH", "Path of file/folder to search");
+    ///     assert_eq!(example_parameter.get_data(), "");
+    ///     
+    ///     example_parameter.set_data("new data");
+    ///     assert_eq!(example_parameter.get_data(), "new data");
     /// ```
     pub fn set_data(&mut self, new_data: &str) {self.data = new_data.to_string();}
 }

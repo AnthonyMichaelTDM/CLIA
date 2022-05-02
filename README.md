@@ -29,11 +29,12 @@ This crate makes the following assumptions about your command line program:
 ### installing
 [see on crates.io](https://crates.io/crates/clia)
 
-add `clia=0.1.2` to the [dependencies] of your projects cargo.toml like so:
+add `clia=0.1.3` to the [dependencies] of your projects cargo.toml like so:
 
+cargo.toml:
 ```rust
 [dependencies]
-clia="0.1.2"
+clia="0.1.3"
 ```
 
 ## Example
