@@ -3,10 +3,11 @@ name = "clia"
 version = "0.1.3"
 edition = "2021"
 description = "Rust command line argument parser with no extra dependencies."
+documentation = "https://docs.rs/clia/latest/clia/"
 readme = "README.md"
 repository = "https://github.com/AnthonyMichaelTDM/CLIA"
 license = "GPL-3.0"
-keywords = ["cli", "clia", "parser", "argument-parser"]
+keywords = ["cli", "parse", "parser", "argument", "arg"]
 categories = ["command-line-interface"]
 exclude = ["/src/main.rs", ".github/*"]
 
