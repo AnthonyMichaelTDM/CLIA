@@ -15,6 +15,9 @@
 //! 'parameter_args' is a module containing utilities for 
 //! defining arguments that fall under the "Parameters" category
 
+#![warn(missing_docs)]
+#![warn(missing_doc_code_examples)]
+
 /// stores data related to parameter arguments
 #[derive(Clone, Debug, PartialEq)]
 pub struct ClParameter {

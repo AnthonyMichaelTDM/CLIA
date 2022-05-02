@@ -20,6 +20,9 @@
 //! - options and their associated bits of data, are typed before any parameter arguments
 //! - any and all "Parameters" are required, and must be included in the arguments for your program to work properly (optional arguments should be tied to flags anyway)
 
+#![warn(missing_docs)]
+#![warn(missing_doc_code_examples)]
+
 /// utilities for defining options
 pub mod option_args;
 /// utilities for parsing options
@@ -65,6 +68,7 @@ call a getter function to get a list of the options (and their associated data) 
 
 use std::error::Error;
 
+/// concentates option and parameter parsing into one place
 pub struct Parser {
     valid_options: Vec<option_args::ClOption>,
     expected_parameters: Vec<parameter_args::ClParameter>,

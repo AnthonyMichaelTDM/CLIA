@@ -15,6 +15,9 @@
 //! 'option_args' is a module containing utilities for defining
 //! arguments that fall under the "Options" category
 
+#![warn(missing_docs)]
+#![warn(missing_doc_code_examples)]
+
 use std::error::Error;
 
 /// stores the short_flag, long_flag, and description of an option
@@ -152,21 +155,31 @@ impl ClOptionInfo {
 pub enum ClOption {
     /// for options like '-r' or '--recursive'
     Flag {
+        /// is the flag present
         present:bool,
+        /// the options info
         info: ClOptionInfo,
     },
     /// for options like '-f <EXTENSIONS>...' or '--filter <EXTENSIONS>...'
     FlagList {
+        /// is the flag present
         present:bool,
+        /// the name of this list (displayed in help messages)
         list_name: String,
+        /// the list associated with this flag
         list: Vec<String>,
+        /// the options info
         info: ClOptionInfo,
     },
     /// for options like '--format <FORMAT>'
     FlagData {
+        /// is the flag present
         present:bool,
+        /// the name of this data (displayed in help messages)
         data_name: String,
+        /// the data associated with this flag
         data: String,
+        /// the options info
         info: ClOptionInfo,
     },
 }

@@ -2,6 +2,9 @@
 //! 'parameter_parser' is a module containing utilities for 
 //! parsing CLI Arguments for arguments that fall under the "Parameters" category
 
+#![warn(missing_docs)]
+#![warn(missing_doc_code_examples)]
+
 use std::error::Error;
 
 use crate::parameter_args;
